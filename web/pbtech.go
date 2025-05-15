@@ -18,12 +18,6 @@ const HTTP_TIMEOUT = 10 * time.Second
 
 var PRODUCT_CODE_FILTER = regexp.MustCompile(`^VGA.*$`)
 
-type Product struct {
-	Code  string
-	Price float64
-	Title string
-}
-
 func findAttr(n *html.Node, key string) string {
 	if n.Type == html.ElementNode {
 		for _, attr := range n.Attr {
@@ -151,22 +145,28 @@ func parsePage(term string, page int) ([]Product, error) {
 	return products, nil
 }
 
-func Search(term string) ([]Product, error) {
+type PBTechProvider struct{}
+
+func (p PBTechProvider) Name() string {
+	return "PBTech"
+}
+
+func (p PBTechProvider) Search(term string) ([]Product, error) {
 	pageLimit := 10
 	products := make([]Product, 0)
 	for n := 1; n <= pageLimit; n++ {
-		fmt.Printf("Searching page %d...\n", n)
+		fmt.Printf("PBTech: Searching page %d...\n", n)
 		foundProducts, err := parsePage(term, n)
 		if err != nil {
 			return nil, err
 		}
 		if len(foundProducts) == 0 {
-			fmt.Println("No products were found")
+			fmt.Println("PBTech: No products were found")
 			break
 		}
 
 		products = append(products, foundProducts...)
 	}
-	fmt.Println("Search completed.")
+	fmt.Println("PBTech: Search completed")
 	return products, nil
 }

@@ -2,5 +2,5 @@ package web
 
 type Provider interface {
 	Name() string
-	Search(query string) ([]Product, error)
+	SearchPage(query string, page int) ([]Product, error)
 }

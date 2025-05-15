@@ -1,6 +1,6 @@
 ## hsnipe
 
-Command-line tool written in Go for searching and comparing product prices (such as graphics cards) across New Zealand tech retailers. It is designed to help you quickly find and compare products from multiple providers.
+Command-line tool written in Go for comparing product prices across NZ tech retailers. 
 
 ### Prerequisites
 - Go 1.20 or newer

@@ -1,19 +1,37 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"os"
 	"slices"
 
+	"github.com/izzymg/hsnipe/config"
 	"github.com/izzymg/hsnipe/web"
 )
 
 func main() {
 
+	configFilePath := "config.json"
+	var configFlag = flag.String("config", configFilePath, "Path to the config file")
+	flag.Parse()
+	if configFlag != nil {
+		configFilePath = *configFlag
+	}
+
+	config, err := config.ParseConfig(configFilePath)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
 	search := web.NewSearch([]web.Provider{
 		web.NewPBTechProvider(),
 	})
 
-	results, err := search.Search("RTX 5070 ti")
+	fmt.Printf("Searching for %s...\n", config.SearchTerm)
+
+	results, err := search.Search(config.SearchTerm)
 	if err != nil {
 		panic(err)
 	}

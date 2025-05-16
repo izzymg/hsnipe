@@ -52,14 +52,9 @@ func (p PBTechProvider) parseProductCard(parent *html.Node) (*Product, error) {
 	}
 
 	productCode := parse.GetNodeAttr(linkEle, "data-product-code")
-	fullPrice, ok := strings.CutPrefix(fullPriceEle.FirstChild.Data, "$")
-	if !ok {
-		return nil, fmt.Errorf("unexpected full price format")
-	}
-	fullPrice = strings.ReplaceAll(fullPrice, ",", "")
-	formattedPrice, err := strconv.ParseFloat(fullPrice, 32)
+	formattedPrice, err := parse.ParsePriceString(fullPriceEle.FirstChild.Data, true)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse full price as float")
+		return nil, err
 	}
 	return &Product{
 		Code:  productCode,

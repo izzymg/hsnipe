@@ -26,7 +26,8 @@ func main() {
 	}
 
 	search := web.NewSearch([]web.Provider{
-		web.NewPBTechProvider(),
+		//web.NewPBTechProvider(),
+		web.NewComputerLoungeProvider(),
 	})
 
 	fmt.Printf("Searching for %s...\n", config.SearchTerm)

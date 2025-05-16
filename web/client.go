@@ -2,11 +2,14 @@ package web
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
 	"golang.org/x/net/html"
 )
+
+const debug = false
 
 func createClient(timeout time.Duration, baseUrl string) *webClient {
 	http := &http.Client{
@@ -42,6 +45,15 @@ func (w *webClient) get(path string, query map[string]string, expectStatus int) 
 	}
 	if res.StatusCode != expectStatus {
 		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
+	}
+
+	if debug {
+		data, err := io.ReadAll(res.Body)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Debug: Dumping Response Body")
+		fmt.Println(string(data))
 	}
 
 	doc, err := html.Parse(res.Body)

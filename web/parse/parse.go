@@ -1,6 +1,8 @@
 package parse
 
 import (
+	"fmt"
+	"strconv"
 	"strings"
 
 	"golang.org/x/net/html"
@@ -40,4 +42,32 @@ func FindElementByClass(parent *html.Node, class string) *html.Node {
 		}
 	}
 	return nil
+}
+
+// FindElementByID finds the first element with the specified ID
+// in the HTML node tree. It performs a depth-first search.
+func FindElementByID(parent *html.Node, id string) *html.Node {
+	for n := range parent.Descendants() {
+		if GetNodeAttr(n, "id") == id {
+			return n
+		}
+	}
+	return nil
+}
+
+func ParsePriceString(text string, prefix bool) (float64, error) {
+	if prefix {
+		cut, ok := strings.CutPrefix(text, "$")
+		if !ok {
+			return -1, fmt.Errorf("unexpected full price format")
+		}
+		text = cut
+	}
+	text = strings.ReplaceAll(text, ",", "")
+	text = strings.ReplaceAll(text, "\n", "")
+	formattedPrice, err := strconv.ParseFloat(text, 32)
+	if err != nil {
+		return -1, fmt.Errorf("failed to parse full price as float")
+	}
+	return formattedPrice, nil
 }

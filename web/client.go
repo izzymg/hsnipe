@@ -1,6 +1,8 @@
 package web
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -26,9 +28,9 @@ type webClient struct {
 	baseUrl string
 }
 
-func (w *webClient) get(path string, query map[string]string, expectStatus int) (*html.Node, error) {
+func (w *webClient) buildRequest(path string, query map[string]string, method string, body io.Reader) (*http.Request, error) {
 	url := fmt.Sprintf("%s/%s", w.baseUrl, path)
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +40,35 @@ func (w *webClient) get(path string, query map[string]string, expectStatus int) 
 		q.Add(key, value)
 	}
 	req.URL.RawQuery = q.Encode()
+	return req, nil
+}
 
+func (w *webClient) postJson(path string, query map[string]string, body any, expectStatus int) ([]byte, error) {
+	data, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	jsonReq := bytes.NewBuffer(data)
+	req, err := w.buildRequest(path, query, "POST", jsonReq)
+	res, err := w.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	if res.StatusCode != expectStatus {
+		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
+	}
+	obj, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	return obj, nil
+}
+
+func (w *webClient) getRaw(path string, query map[string]string, expectStatus int) ([]byte, error) {
+	req, err := w.buildRequest(path, query, "GET", nil)
+	if err != nil {
+		return nil, err
+	}
 	res, err := w.client.Do(req)
 	if err != nil {
 		return nil, err
@@ -47,13 +77,24 @@ func (w *webClient) get(path string, query map[string]string, expectStatus int) 
 		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
 
-	if debug {
-		data, err := io.ReadAll(res.Body)
-		if err != nil {
-			panic(err)
-		}
-		fmt.Println("Debug: Dumping Response Body")
-		fmt.Println(string(data))
+	data, err := io.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
+
+func (w *webClient) getHtml(path string, query map[string]string, expectStatus int) (*html.Node, error) {
+	req, err := w.buildRequest(path, query, "GET", nil)
+	if err != nil {
+		return nil, err
+	}
+	res, err := w.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	if res.StatusCode != expectStatus {
+		return nil, fmt.Errorf("unexpected status code: %d", res.StatusCode)
 	}
 
 	doc, err := html.Parse(res.Body)

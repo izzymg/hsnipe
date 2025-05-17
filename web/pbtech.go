@@ -64,7 +64,7 @@ func (p PBTechProvider) parseProductCard(parent *html.Node) (*Product, error) {
 }
 
 func (p PBTechProvider) searchPage(term string, page int) ([]Product, error) {
-	doc, err := p.client.get("search", map[string]string{
+	doc, err := p.client.getHtml("search", map[string]string{
 		"sf": term,
 		"pg": strconv.Itoa(page),
 	}, 200)

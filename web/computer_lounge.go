@@ -62,7 +62,7 @@ func (c ComputerLoungeProvider) parseCard(node *html.Node) (*Product, error) {
 }
 
 func (c ComputerLoungeProvider) SearchPage(query string, page int) ([]Product, error) {
-	node, err := c.client.get("search", map[string]string{
+	node, err := c.client.getHtml("search", map[string]string{
 		"q":    query,
 		"page": strconv.Itoa(page),
 	}, 200)

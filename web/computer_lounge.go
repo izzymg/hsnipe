@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/izzymg/hsnipe/web/client"
 	"github.com/izzymg/hsnipe/web/parse"
 	"golang.org/x/net/html"
 )
@@ -17,13 +18,13 @@ const category = "293914804339"
 
 func NewComputerLoungeProvider(titleFilter regexp.Regexp) *ComputerLoungeProvider {
 	return &ComputerLoungeProvider{
-		client:      createClient(10*time.Second, "https://www.computerlounge.co.nz"),
+		client:      client.CreateClient(10*time.Second, "https://www.computerlounge.co.nz"),
 		titleFilter: titleFilter,
 	}
 }
 
 type ComputerLoungeProvider struct {
-	client      *webClient
+	client      *client.WebClient
 	titleFilter regexp.Regexp
 }
 
@@ -62,7 +63,7 @@ func (c ComputerLoungeProvider) parseCard(node *html.Node) (*Product, error) {
 }
 
 func (c ComputerLoungeProvider) SearchPage(query string, page int) ([]Product, error) {
-	node, err := c.client.getHtml("search", map[string]string{
+	node, err := c.client.GetHtml("search", map[string]string{
 		"q":    query,
 		"page": strconv.Itoa(page),
 	}, 200)

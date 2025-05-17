@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"regexp"
 	"time"
+
+	"github.com/izzymg/hsnipe/web/client"
 )
 
 type ascentSearchRequest struct {
@@ -96,14 +98,14 @@ type ascentHighlight struct {
 }
 
 type AscentProvider struct {
-	webClient *webClient
-	apiClient *webClient
+	webClient *client.WebClient
+	apiClient *client.WebClient
 }
 
 func NewAscentProvider() *AscentProvider {
 	return &AscentProvider{
-		webClient: createClient(time.Second*10, "https://ascent.co.nz"),
-		apiClient: createClient(time.Second*10, "https://83rynw1spubc6vg0p-1.a1.typesense.net"),
+		webClient: client.CreateClient(time.Second*10, "https://ascent.co.nz"),
+		apiClient: client.CreateClient(time.Second*10, "https://83rynw1spubc6vg0p-1.a1.typesense.net"),
 	}
 }
 
@@ -112,7 +114,7 @@ func (ap AscentProvider) Name() string {
 }
 
 func (ap AscentProvider) SearchPage(query string, page int) ([]Product, error) {
-	js, err := ap.webClient.getRaw("search/app5.js", map[string]string{}, 200)
+	js, err := ap.webClient.GetRaw("search/app5.js", map[string]string{}, 200)
 	if err != nil {
 		return nil, err
 	}
@@ -124,7 +126,7 @@ func (ap AscentProvider) SearchPage(query string, page int) ([]Product, error) {
 	}
 	key := string(match[1])
 
-	response, err := ap.apiClient.postJson("multi_search", map[string]string{
+	response, err := ap.apiClient.PostJson("multi_search", map[string]string{
 		"x-typesense-api-key": key,
 	}, map[string][]ascentSearchRequest{
 		"searches": {

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/izzymg/hsnipe/web/client"
 	"github.com/izzymg/hsnipe/web/parse"
 	"golang.org/x/net/html"
 )
@@ -14,13 +15,13 @@ import (
 /** Web: pbtech.co.nz */
 
 type PBTechProvider struct {
-	client        *webClient
+	client        *client.WebClient
 	productFilter regexp.Regexp
 }
 
 func NewPBTechProvider(productFilter regexp.Regexp) *PBTechProvider {
 	return &PBTechProvider{
-		client:        createClient(10*time.Second, "https://www.pbtech.co.nz"),
+		client:        client.CreateClient(10*time.Second, "https://www.pbtech.co.nz"),
 		productFilter: productFilter,
 	}
 }
@@ -64,7 +65,7 @@ func (p PBTechProvider) parseProductCard(parent *html.Node) (*Product, error) {
 }
 
 func (p PBTechProvider) searchPage(term string, page int) ([]Product, error) {
-	doc, err := p.client.getHtml("search", map[string]string{
+	doc, err := p.client.GetHtml("search", map[string]string{
 		"sf": term,
 		"pg": strconv.Itoa(page),
 	}, 200)

@@ -1,4 +1,4 @@
-package web
+package client
 
 import (
 	"bytes"
@@ -13,22 +13,22 @@ import (
 
 const debug = false
 
-func createClient(timeout time.Duration, baseUrl string) *webClient {
+func CreateClient(timeout time.Duration, baseUrl string) *WebClient {
 	http := &http.Client{
 		Timeout: timeout,
 	}
-	return &webClient{
+	return &WebClient{
 		client:  http,
 		baseUrl: baseUrl,
 	}
 }
 
-type webClient struct {
+type WebClient struct {
 	client  *http.Client
 	baseUrl string
 }
 
-func (w *webClient) buildRequest(path string, query map[string]string, method string, body io.Reader) (*http.Request, error) {
+func (w *WebClient) buildRequest(path string, query map[string]string, method string, body io.Reader) (*http.Request, error) {
 	url := fmt.Sprintf("%s/%s", w.baseUrl, path)
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
@@ -43,7 +43,7 @@ func (w *webClient) buildRequest(path string, query map[string]string, method st
 	return req, nil
 }
 
-func (w *webClient) postJson(path string, query map[string]string, body any, expectStatus int) ([]byte, error) {
+func (w *WebClient) PostJson(path string, query map[string]string, body any, expectStatus int) ([]byte, error) {
 	data, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
@@ -64,7 +64,7 @@ func (w *webClient) postJson(path string, query map[string]string, body any, exp
 	return obj, nil
 }
 
-func (w *webClient) getRaw(path string, query map[string]string, expectStatus int) ([]byte, error) {
+func (w *WebClient) GetRaw(path string, query map[string]string, expectStatus int) ([]byte, error) {
 	req, err := w.buildRequest(path, query, "GET", nil)
 	if err != nil {
 		return nil, err
@@ -84,7 +84,7 @@ func (w *webClient) getRaw(path string, query map[string]string, expectStatus in
 	return data, nil
 }
 
-func (w *webClient) getHtml(path string, query map[string]string, expectStatus int) (*html.Node, error) {
+func (w *WebClient) GetHtml(path string, query map[string]string, expectStatus int) (*html.Node, error) {
 	req, err := w.buildRequest(path, query, "GET", nil)
 	if err != nil {
 		return nil, err

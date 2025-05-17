@@ -2,6 +2,7 @@ package web
 
 import "fmt"
 
+// searchProvider fetches products from a provider for a given query, paginating up to maxPages.
 func searchProvider(provider Provider, query string) ([]Product, error) {
 	maxPages := 10
 	products := make([]Product, 0)
@@ -20,22 +21,26 @@ func searchProvider(provider Provider, query string) ([]Product, error) {
 	return products, nil
 }
 
+// Search coordinates product searches across multiple providers.
 type Search struct {
 	providers []Provider
 }
 
+// SearchResult contains the results and errors from searching a single provider.
 type SearchResult struct {
 	Errors   []error
 	Products []Product
 	Provider string
 }
 
+// NewSearch creates a new Search instance with the given providers.
 func NewSearch(providers []Provider) *Search {
 	return &Search{
 		providers: providers,
 	}
 }
 
+// Search runs the query across all providers and returns a slice of SearchResult.
 func (search Search) Search(query string) ([]SearchResult, error) {
 	results := make([]SearchResult, 0, len(search.providers))
 

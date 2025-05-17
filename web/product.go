@@ -7,6 +7,7 @@ const (
 	StockOut = "Out"
 )
 
+// Product data
 type Product struct {
 	Code  string
 	Price float64

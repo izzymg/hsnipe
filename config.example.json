@@ -3,6 +3,9 @@
     "computer_lounge": {
         "title_filter": "Graphics Card$"
     },
+    "ascent": {
+        "title_filter": "GDDR6$"
+    },
     "pb_tech": {
         "filter": "^VGA.*$"
     }

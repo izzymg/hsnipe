@@ -98,14 +98,16 @@ type ascentHighlight struct {
 }
 
 type AscentProvider struct {
-	webClient *client.WebClient
-	apiClient *client.WebClient
+	webClient   *client.WebClient
+	apiClient   *client.WebClient
+	titleFitler regexp.Regexp
 }
 
-func NewAscentProvider() *AscentProvider {
+func NewAscentProvider(titleFilter regexp.Regexp) *AscentProvider {
 	return &AscentProvider{
-		webClient: client.CreateClient(time.Second*10, "https://ascent.co.nz"),
-		apiClient: client.CreateClient(time.Second*10, "https://83rynw1spubc6vg0p-1.a1.typesense.net"),
+		webClient:   client.CreateClient(time.Second*10, "https://ascent.co.nz"),
+		apiClient:   client.CreateClient(time.Second*10, "https://83rynw1spubc6vg0p-1.a1.typesense.net"),
+		titleFitler: titleFilter,
 	}
 }
 
@@ -158,6 +160,9 @@ func (ap AscentProvider) SearchPage(query string, page int) ([]Product, error) {
 				stock = StockIn
 			} else {
 				stock = StockOut
+			}
+			if !ap.titleFitler.Match([]byte(doc.ProductName)) {
+				continue
 			}
 			products = append(products, Product{
 				Code:  doc.ID,

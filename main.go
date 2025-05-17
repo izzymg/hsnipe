@@ -39,7 +39,7 @@ func main() {
 	search := web.NewSearch([]web.Provider{
 		web.NewPBTechProvider(*regexp.MustCompile(config.PBTechConfig.Filter)),
 		web.NewComputerLoungeProvider(*regexp.MustCompile(config.ComputerLoungeConfig.TitleFilter)),
-		web.NewAscentProvider(),
+		web.NewAscentProvider(*regexp.MustCompile(config.AscentConfig.TitleFilter)),
 	}, logger)
 
 	logger.Printf("Searching for %s...\n", config.SearchTerm)

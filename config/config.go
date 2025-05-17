@@ -12,11 +12,14 @@ type PBTechConfig struct {
 type ComputerLoungeConfig struct {
 	TitleFilter string `json:"title_filter"`
 }
-
+type AscentConfig struct {
+	TitleFilter string `json:"title_filter"`
+}
 type Config struct {
 	SearchTerm           string               `json:"search_term"`
 	PBTechConfig         PBTechConfig         `json:"pb_tech"`
 	ComputerLoungeConfig ComputerLoungeConfig `json:"computer_lounge"`
+	AscentConfig         AscentConfig         `json:"ascent"`
 }
 
 func ParseConfig(configFp string) (*Config, error) {

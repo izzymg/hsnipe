@@ -1,3 +1,9 @@
 {
-    "searchTerm": "RX 9070 XT"
+    "search_term": "RX 9070 XT",
+    "computer_lounge": {
+        "title_filter": "Graphics Card$"
+    },
+    "pb_tech": {
+        "filter": "^VGA.*$"
+    }
 }

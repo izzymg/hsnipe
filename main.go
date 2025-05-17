@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"regexp"
 	"slices"
 
 	"github.com/izzymg/hsnipe/config"
@@ -26,8 +27,8 @@ func main() {
 	}
 
 	search := web.NewSearch([]web.Provider{
-		//web.NewPBTechProvider(),
-		web.NewComputerLoungeProvider(),
+		//web.NewPBTechProvider(*regexp.MustCompile(config.PBTechConfig.Filter)),
+		web.NewComputerLoungeProvider(*regexp.MustCompile(config.ComputerLoungeConfig.TitleFilter)),
 	})
 
 	fmt.Printf("Searching for %s...\n", config.SearchTerm)

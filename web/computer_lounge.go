@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -14,14 +15,16 @@ import (
 
 const category = "293914804339"
 
-func NewComputerLoungeProvider() *ComputerLoungeProvider {
+func NewComputerLoungeProvider(titleFilter regexp.Regexp) *ComputerLoungeProvider {
 	return &ComputerLoungeProvider{
-		client: createClient(10*time.Second, "https://www.computerlounge.co.nz"),
+		client:      createClient(10*time.Second, "https://www.computerlounge.co.nz"),
+		titleFilter: titleFilter,
 	}
 }
 
 type ComputerLoungeProvider struct {
-	client *webClient
+	client      *webClient
+	titleFilter regexp.Regexp
 }
 
 func (c ComputerLoungeProvider) Name() string {
@@ -88,6 +91,9 @@ func (c ComputerLoungeProvider) SearchPage(query string, page int) ([]Product, e
 		product, err := c.parseCard(productCardElement)
 		if err != nil {
 			return nil, err
+		}
+		if !c.titleFilter.MatchString(product.Title) {
+			continue
 		}
 		products = append(products, *product)
 	}

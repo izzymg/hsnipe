@@ -6,18 +6,21 @@ import (
 	"os"
 )
 
-type Config struct {
-	SearchTerm string `json:"search_term"`
+type PBTechConfig struct {
+	Filter string `json:"filter"`
+}
+type ComputerLoungeConfig struct {
+	TitleFilter string `json:"title_filter"`
 }
 
-func NewConfig() *Config {
-	return &Config{
-		SearchTerm: "RTX 5070 ti",
-	}
+type Config struct {
+	SearchTerm           string               `json:"search_term"`
+	PBTechConfig         PBTechConfig         `json:"pb_tech"`
+	ComputerLoungeConfig ComputerLoungeConfig `json:"computer_lounge"`
 }
 
 func ParseConfig(configFp string) (*Config, error) {
-	config := NewConfig()
+	config := &Config{}
 	file, err := os.Open(configFp)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open config file: %w", err)

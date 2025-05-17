@@ -13,15 +13,15 @@ import (
 
 /** Web: pbtech.co.nz */
 
-var productFilter = regexp.MustCompile(`^VGA.*$`)
-
 type PBTechProvider struct {
-	client *webClient
+	client        *webClient
+	productFilter regexp.Regexp
 }
 
-func NewPBTechProvider() *PBTechProvider {
+func NewPBTechProvider(productFilter regexp.Regexp) *PBTechProvider {
 	return &PBTechProvider{
-		client: createClient(10*time.Second, "https://www.pbtech.co.nz"),
+		client:        createClient(10*time.Second, "https://www.pbtech.co.nz"),
+		productFilter: productFilter,
 	}
 }
 
@@ -94,7 +94,7 @@ func (p PBTechProvider) searchPage(term string, page int) ([]Product, error) {
 				return nil, err
 			}
 
-			if !productFilter.MatchString(product.Code) {
+			if !p.productFilter.MatchString(product.Code) {
 				continue
 			}
 			products = append(products, *product)
